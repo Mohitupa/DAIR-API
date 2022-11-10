@@ -7,12 +7,7 @@ router.get(
     "/ndhs-master/governance-state/:governance_id/:country_id/:year",
     async (req, res) => {
         try {
-            let g = [1,2];
-            let y = [2021,2022];
             let {governance_id,country_id,year} = req.params;
-            if(!g.includes(governance_id) || !isNaN(country_id) || !y.includes(year)) {
-                return res.status(400).send('Please Provide valid Data.')
-            }
             const sqlndhs = `SELECT 
             Sum(ndhs_master.score) as score,
             taxonomies.id as taxonomy_id,
@@ -37,7 +32,7 @@ router.get(
                 res.status(200).send(c);
             })
         } catch (err) {
-            res.status(500).send();
+            res.status(400).send(err);
         }
     }
 );

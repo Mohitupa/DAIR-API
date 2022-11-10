@@ -2,12 +2,12 @@ const express = require("express");
 const router = new express.Router();
 const { pool } = require("./../db/postgres");
 const transform = require('./../shared/tranform-object');
+const env = require("./../env");
 
 router.post("/ndhs-master/overview", async (req, res) => {
     try {
-        let governance = [1,2];
         let {countries,governanceId} = req.body;
-        if(!governance.includes(governanceId)) {
+        if(env.g.includes(governanceId) == false) {
             return res.status(400).send('Please Provide valid Data.')
         }
         const sql = `SELECT

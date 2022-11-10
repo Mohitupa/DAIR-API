@@ -12,7 +12,7 @@ router.get("/ndhs-master/country-list", async (req, res) => {
             res.status(200).send(results.rows);
         })
     } catch (err) {
-        res.status(500).send();
+        res.status(400).send(err);
     }
 });
 

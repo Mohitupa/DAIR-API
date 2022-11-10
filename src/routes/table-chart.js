@@ -1,10 +1,14 @@
 const express = require("express");
 const router = new express.Router();
 const { pool } = require("./../db/postgres");
+const env = require("./../env");
 
 router.post("/ndhs-master/table-chart", async (req, res) => {
-    let {countries,developmentId,ultimateId,taxonomyId} = req.body;
     try {
+        let {countries,developmentId,ultimateId,taxonomyId} = req.body;
+        if(env.t.includes(taxonomyId) == false || env.d.includes(developmentId) == false || env.u.includes(ultimateId) == false ) {
+            return res.status(400).send('Please Provide valid Data.')
+        }
         const sql = `SELECT 
         countries.id as country_id,
         countries.name as country_name,

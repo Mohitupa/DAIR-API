@@ -8,8 +8,4 @@ const pool = new Pool({
   host: 'localhost',
 })
 
-pool.on('connect', () => {
-  console.log('DATABASE CONNECTED!');
-});
-
 module.exports = { pool };

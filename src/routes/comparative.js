@@ -3,8 +3,8 @@ const router = new express.Router();
 const { pool } = require("./../db/postgres");
 
 router.post("/ndhs-master/comparative", async (req, res) => {
-    let {countries,developmentId} = req.body;
     try {
+        let {countries,developmentId} = req.body;
         const sql = `SELECT 
         governance_types.id as governance_id,
         governance_types.name as governance_name,

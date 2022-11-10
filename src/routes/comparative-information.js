@@ -1,11 +1,12 @@
 const express = require("express");
 const router = new express.Router();
 const {pool} = require("./../db/postgres");
+const env = require("./../env");
 
 router.post("/ndhs-master/comparative-information", async (req, res) => {
     try {
         let {countries,developmentId,ultimateId,governanceId} = req.body;
-        if(!isNaN(governanceId) && !isNaN(developmentId) && isNaN(ultimateId)) {
+        if(env.d.includes(developmentId) == false || env.u.includes(ultimateId) == false || env.g.includes(governanceId) == false) {
             return res.status(400).send('Please Provide valid Data.')
         }
         const sql = `SElECT 
@@ -33,7 +34,7 @@ router.post("/ndhs-master/comparative-information", async (req, res) => {
             res.status(200).send(results.rows);
         })
     } catch (err) {
-        res.status(500).send(err);
+        res.status(400).send(err);
     }
 });
 

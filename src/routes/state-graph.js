@@ -1,10 +1,15 @@
 const express = require("express");
 const router = new express.Router();
 const { pool } = require("./../db/postgres");
+const env = require("./../env");
 
 router.post("/ndhs-master/state-graph", async (req, res) => {
-  let {governanceId,developmentId,ultimateId,taxonomyId,countries} = req.body;
   try {
+    let {governanceId,developmentId,ultimateId,taxonomyId,countries} = req.body;
+
+    if(env.t.includes(taxonomyId) == false || env.d.includes(developmentId) == false || env.u.includes(ultimateId) == false || env.g.includes(governanceId) == false) {
+        return res.status(400).send('Please Provide valid Data.')
+    }
     const sql = `SELECT
     governance_types.id as governance_id,
     governance_types.name as governance_name,
@@ -24,7 +29,7 @@ router.post("/ndhs-master/state-graph", async (req, res) => {
     JOIN development_types ON development_types.id = `+ developmentId + `
     JOIN ultimate_fields ON ultimate_fields.id = `+ ultimateId + `
     JOIN taxonomies ON taxonomies.id = `+ taxonomyId + `
-    JOIN questions ON questions.taxonomy_id = taxonomies.id AND ultimate_fields_id = ultimate_fields.id
+    JOIN questions ON questions.taxonomy_id = taxonomies.id AND ultimate_fields_id = ultimate_fields.id AND development_types.id = questions.development_types_id
     JOIN ndhs_master ON ndhs_master.country_id = countries.id AND ndhs_master.question_id = questions.question_id
     where countries.id in (` + countries + `)
     GROUP BY countries.name,governance_types.id,development_types.id,ultimate_fields.id,taxonomies.name,countries.id,taxonomies.taxonomy_score`;
