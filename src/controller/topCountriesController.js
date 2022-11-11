@@ -8,24 +8,28 @@ let getTopCountries = async (req, res) => {
             return res.status(400).send('Please Provide valid Data.')
         }
         const sql = `SELECT 
+        development_types.name as dt_name,
+        countries.id as country_id,
+        countries.name as country_name,
         governance_types.id as governance_id,
         governance_types.name as governance_name,
-        development_types.name as development_name,
+        taxonomies.name as taxonomy_name,
         ultimate_fields.name as ultimate_name,
-        taxonomies.name as texonomy_name,
-        ndhs_master.country_id as country_id,
-        countries.name as country_name,
-        sum(ndhs_master.score) as score
-        from questions
-        JOIN governance_types ON governance_types.id = `+ governanceId + `
-        JOIN development_types ON development_types.id = `+ developmentId + `
-        JOIN ultimate_fields ON ultimate_fields.id = `+ ultimateId + `
+        Sum(ndhs_master.score) as score
+        FROM ultimate_fields 
         JOIN taxonomies ON taxonomies.id = `+ taxonomyId + `
-        JOIN ndhs_master ON ndhs_master.question_id = questions.question_id AND ndhs_master.year IN (`+ year + `)
+        JOIN governance_types ON governance_types.id = `+ governanceId + `
+        JOIN development_types ON development_types.id =  `+ developmentId + `
+        JOIN questions ON questions.taxonomy_id = taxonomies.id
+        AND questions.ultimate_fields_id = `+ ultimateId + `
+        AND questions.development_types_id = development_types.id
+        JOIN ndhs_master ON ndhs_master.year IN (`+ year + `)
+        AND questions.id = ndhs_master.question_id
         JOIN countries ON countries.id = ndhs_master.country_id
-        where questions.development_types_id = development_types.id AND questions.ultimate_fields_id = ultimate_fields.id AND questions.taxonomy_id = taxonomies.id
-        GROUP BY governance_types.id,development_types.name,ultimate_fields.name,taxonomies.name,ndhs_master.country_id,countries.name
-        ORDER BY score DESC LIMIT 5;`
+        WHERE ultimate_fields.id = `+ ultimateId + `
+        GROUP BY ultimate_fields.id,development_types.id,countries.id,taxonomies.id,
+        governance_types.id
+        ORDER BY score DESC LIMIT 5`;
 
         pool.query(sql, async (error, results) => {
             if (error || results.rows.length == 0) {
