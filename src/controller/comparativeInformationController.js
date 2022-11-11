@@ -1,12 +1,10 @@
-const express = require("express");
-const router = new express.Router();
-const {pool} = require("./../db/postgres");
+const { pool } = require("./../db/postgres");
 const env = require("./../env");
 
-router.post("/ndhs-master/comparative-information", async (req, res) => {
+let getComparativeInfo = async (req, res) => {
     try {
-        let {countries,developmentId,ultimateId,governanceId} = req.body;
-        if(env.d.includes(developmentId) == false || env.u.includes(ultimateId) == false || env.g.includes(governanceId) == false) {
+        let { countries, developmentId, ultimateId, governanceId } = req.body;
+        if (env.d.includes(developmentId) == false || env.u.includes(ultimateId) == false || env.g.includes(governanceId) == false) {
             return res.status(400).send('Please Provide valid Data.')
         }
         const sql = `SElECT 
@@ -20,11 +18,11 @@ router.post("/ndhs-master/comparative-information", async (req, res) => {
         ROUND(SUM(ndhs_master.score),10) AS percentage
         from taxonomies 
         JOIN countries ON countries.id IN (` + countries + `)
-        JOIN development_types ON development_types.id = `+developmentId+`
-        JOIN ultimate_fields ON ultimate_fields.id = `+ultimateId+`
+        JOIN development_types ON development_types.id = `+ developmentId + `
+        JOIN ultimate_fields ON ultimate_fields.id = `+ ultimateId + `
         JOIN questions ON questions.taxonomy_id = taxonomies.id AND questions.ultimate_fields_id = ultimate_fields.id
         JOIN ndhs_master ON questions.question_id = ndhs_master.question_id AND country_id = countries.id 
-        WHERE taxonomies.governance_id = `+governanceId+`
+        WHERE taxonomies.governance_id = `+ governanceId + `
         GROUP BY taxonomies.id,countries.id,development_types.name,ultimate_fields.name`;
 
         pool.query(sql, async (error, results) => {
@@ -36,6 +34,6 @@ router.post("/ndhs-master/comparative-information", async (req, res) => {
     } catch (err) {
         res.status(400).send(err);
     }
-});
+};
 
-module.exports = router;
+module.exports = {getComparativeInfo};

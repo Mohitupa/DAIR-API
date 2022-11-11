@@ -1,12 +1,10 @@
-const express = require("express");
-const router = new express.Router();
-const {pool} = require("./../db/postgres");
+const { pool } = require("./../db/postgres");
 const env = require("./../env");
 
-router.post("/ndhs-master/top-countries", async (req, res) => {
+let getTopCountries = async (req, res) => {
     try {
-        let {governanceId,developmentId,ultimateId,taxonomyId,year} = req.body;
-        if(env.t.includes(taxonomyId) == false || env.d.includes(developmentId) == false || env.u.includes(ultimateId) == false || env.g.includes(governanceId) == false || env.y.includes(year)) {
+        let { governanceId, developmentId, ultimateId, taxonomyId, year } = req.body;
+        if (env.t.includes(taxonomyId) == false || env.d.includes(developmentId) == false || env.u.includes(ultimateId) == false || env.g.includes(governanceId) == false || env.y.includes(year)) {
             return res.status(400).send('Please Provide valid Data.')
         }
         const sql = `SELECT 
@@ -19,11 +17,11 @@ router.post("/ndhs-master/top-countries", async (req, res) => {
         countries.name as country_name,
         sum(ndhs_master.score) as score
         from questions
-        JOIN governance_types ON governance_types.id = `+governanceId+`
-        JOIN development_types ON development_types.id = `+developmentId+`
-        JOIN ultimate_fields ON ultimate_fields.id = `+ultimateId+`
-        JOIN taxonomies ON taxonomies.id = `+taxonomyId+`
-        JOIN ndhs_master ON ndhs_master.question_id = questions.question_id AND ndhs_master.year IN (`+year+`)
+        JOIN governance_types ON governance_types.id = `+ governanceId + `
+        JOIN development_types ON development_types.id = `+ developmentId + `
+        JOIN ultimate_fields ON ultimate_fields.id = `+ ultimateId + `
+        JOIN taxonomies ON taxonomies.id = `+ taxonomyId + `
+        JOIN ndhs_master ON ndhs_master.question_id = questions.question_id AND ndhs_master.year IN (`+ year + `)
         JOIN countries ON countries.id = ndhs_master.country_id
         where questions.development_types_id = development_types.id AND questions.ultimate_fields_id = ultimate_fields.id AND questions.taxonomy_id = taxonomies.id
         GROUP BY governance_types.id,development_types.name,ultimate_fields.name,taxonomies.name,ndhs_master.country_id,countries.name
@@ -31,13 +29,13 @@ router.post("/ndhs-master/top-countries", async (req, res) => {
 
         pool.query(sql, async (error, results) => {
             if (error || results.rows.length == 0) {
-               return res.status(400).send();
+                return res.status(400).send();
             }
             res.status(200).send(results.rows);
         })
     } catch (err) {
         res.status(400).send(err);
     }
-});
+};
 
-module.exports = router;
+module.exports = { getTopCountries };

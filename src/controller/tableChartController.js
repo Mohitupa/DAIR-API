@@ -1,12 +1,10 @@
-const express = require("express");
-const router = new express.Router();
 const { pool } = require("./../db/postgres");
 const env = require("./../env");
 
-router.post("/ndhs-master/table-chart", async (req, res) => {
+let getTableChart = async (req, res) => {
     try {
-        let {countries,developmentId,ultimateId,taxonomyId} = req.body;
-        if(env.t.includes(taxonomyId) == false || env.d.includes(developmentId) == false || env.u.includes(ultimateId) == false ) {
+        let { countries, developmentId, ultimateId, taxonomyId } = req.body;
+        if (env.t.includes(taxonomyId) == false || env.d.includes(developmentId) == false || env.u.includes(ultimateId) == false) {
             return res.status(400).send('Please Provide valid Data.')
         }
         const sql = `SELECT 
@@ -45,25 +43,6 @@ router.post("/ndhs-master/table-chart", async (req, res) => {
     } catch (err) {
         res.status(400).send(err);
     }
-});
+};
 
-module.exports = router;
-
-
-// {
-//     "c_name": "Italy",
-//     "developement_id": 1,
-//     "development_name": "Present Development",
-//     "ultimate_field_id": 1,
-//     "ultimate_name": "Readiness",
-//     "country_id": 108,
-//     "taxonomy_id": 10,
-//     "taxonomy_name": "Legal rules",
-//     "indicator_id": 81,
-//     "indicator_name": "Data Protection Law/Data Privacy policy/Cyber Security",
-//     "indicator_score": 45,
-//     "question": "Is there any existing Data Protection Law?",
-//     "question_score": 15,
-//     "status": "Yes",
-//     "actual_score": 15
-//   },
+module.exports = { getTableChart };

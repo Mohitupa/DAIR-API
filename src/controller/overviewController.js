@@ -1,11 +1,9 @@
-const express = require("express");
-const router = new express.Router();
 const { pool } = require("./../db/postgres");
 const transform = require('./../shared/tranform-object');
 const env = require("./../env");
 
-router.post("/ndhs-master/overview", async (req, res) => {
-    try {
+let getOverview = async (req, res) => {
+    try { 
         let {countries,governanceId} = req.body;
         if(env.g.includes(governanceId) == false) {
             return res.status(400).send('Please Provide valid Data.')
@@ -51,6 +49,6 @@ router.post("/ndhs-master/overview", async (req, res) => {
     } catch (err) {
         res.status(400).send(err);
     }
-});
+};
 
-module.exports = router;
+module.exports = {getOverview};

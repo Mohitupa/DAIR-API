@@ -1,8 +1,7 @@
-const express = require("express");
-const router = new express.Router();
 const { pool } = require("./../db/postgres");
+const env = require("./../env");
 
-router.post("/ndhs-master/comparative", async (req, res) => {
+let getComparative = async (req, res) => {
     try {
         let {countries,developmentId} = req.body;
         const sql = `SELECT 
@@ -34,6 +33,6 @@ router.post("/ndhs-master/comparative", async (req, res) => {
     } catch (err) {
         res.status(400).send(err);
     }
-});
+};
 
-module.exports = router;
+module.exports = {getComparative};

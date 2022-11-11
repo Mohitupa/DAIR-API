@@ -1,8 +1,6 @@
-const express = require("express");
-const router = new express.Router();
 const {pool} = require("./../db/postgres");
 
-router.get("/ndhs-master/country-list", async (req, res) => {
+let getCountries = async (req, res) => {
     try {
         const sql = "SELECT * FROM countries";
         pool.query(sql, async (error, results) => {
@@ -14,6 +12,6 @@ router.get("/ndhs-master/country-list", async (req, res) => {
     } catch (err) {
         res.status(400).send(err);
     }
-});
+};
 
-module.exports = router;
+module.exports = {getCountries};
