@@ -9,6 +9,7 @@ const comparative_controller = require("../controller/comparativeController");
 const state_graph_controller = require("../controller/stateGraphController");
 const table_chart_controller = require("../controller/tableChartController");
 const top_countries_controller = require("../controller/topCountriesController");
+const radial_controller = require("../controller/radialChartController");
 
 router.get("/ndhs-master/country-list", countries_controller.getCountries);
 router.get("/ndhs-master/governance-state/:governance_id/:country_id/:year", governance_controller.getGovernace);
@@ -18,5 +19,6 @@ router.post("/ndhs-master/comparative", comparative_controller.getComparative);
 router.post("/ndhs-master/state-graph", state_graph_controller.getStateGraph);
 router.post("/ndhs-master/table-chart", table_chart_controller.getTableChart);
 router.post("/ndhs-master/top-countries", top_countries_controller.getTopCountries);
+router.post("/ndhs-master/radial-chart/:governanceId", radial_controller.getRedial);
 
 module.exports = router;
